@@ -1,5 +1,5 @@
 const lib = require('lib');
-
+//note to self, ruined project by manipulating params and slots and call return in this main.js
 /**
 * @param {string} name Intent Name to trigger
 * @param {object} slots Slot Information
@@ -42,7 +42,7 @@ module.exports = (name = '', slots = {}, request = {}, context, callback) => {
           type: 'PlainText',
           text: err ? `Error: ${err.message}` : resultObj["titles"]
         },
-        shouldEndSession: true
+        shouldEndSession: false
       }
     });
   });
