@@ -14,14 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 
@@ -35,7 +33,6 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifi
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.HashMap;
@@ -53,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -78,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
                                     int resultCode,
                                     Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        MyRequestQueue = Volley.newRequestQueue(this);
 
         final Bitmap photo = helper.getBitmap(resultCode);
         final File photoFile = helper.getFile(resultCode);
@@ -123,13 +121,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 output.append(ingredients.toString());
 
-                String url = "http://yourdomain.com/path";
+                String url = "https://yhuang133.lib.id/endpoint@dev/";
                 Response.Listener<JSONArray> dataListener = new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
                         try{
                             Boolean success = response.getBoolean(Integer.parseInt("success"));
-                            if (success == false){
+                            Toasty.success(getApplicationContext(), "Found Recipes", Toast.LENGTH_SHORT, true).show();
+                            if (!success){
                                 throw new AuthFailureError("Recipe Failure");
                             }
                         } catch (JSONException | AuthFailureError e) {
@@ -144,14 +143,12 @@ public class MainActivity extends AppCompatActivity {
                         NetworkResponse response = error.networkResponse;
                         if (response != null && response.data != null) {
                             Log.d("Error", "Error reponse:" + response.statusCode);
-                            String res;
+
                             switch (response.statusCode) {
                                 case 409:
-                                    res = new String(response.data);
                                     Toasty.error(getApplicationContext(), "Account already exists for that email!", Toast.LENGTH_SHORT, true).show();
                                     break;
                                 default:
-                                    res = new String(response.data);
                                     Toasty.error(getApplicationContext(), "Unable to Find Recipes", Toast.LENGTH_SHORT, true).show();
                                     break;
 
@@ -163,17 +160,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 };
                 JsonArrayRequest arrayRequest = new JsonArrayRequest(Request.Method.POST, url, ingredients, dataListener, errorListener) {
-                    @Override
+                   /* @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         HashMap<String, String> headers = new HashMap<String, String>();
                         headers.put("Content-Type", "application/json; charset=utf-8");
                         return headers;
-                    }
+                    }*/
                 };
-                arrayRequest.setRetryPolicy(new DefaultRetryPolicy(
-                        3000,
-                        5,
-                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
                 MyRequestQueue.add(arrayRequest);
 
