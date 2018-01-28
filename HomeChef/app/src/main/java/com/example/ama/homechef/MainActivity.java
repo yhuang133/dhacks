@@ -13,12 +13,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-/**
-*
-*/ public void openCamera(View v){
-    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-    startActivity(intent);
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    public void openCamera(View v){
+        Intent takePictureIntent = new Intent("android.media.action.IMAGE_CAPTURE");
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Intent intent = new Intent(this, HomeChef2.class);
+            startActivity(intent);
+        }
+    }
 }
