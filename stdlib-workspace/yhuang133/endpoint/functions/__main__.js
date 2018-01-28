@@ -1,10 +1,11 @@
 const request = require('request');
 /**
 * takes ingredient list and returns relevant recipes
-* @param {string} foods the ingredients in JSON
-* @returns {string}
+* @param {any} foods the ingredients in JSON
+* @returns {any}
 */
 module.exports = (foods = '["lettuce", "bacon"]', context, callback) => {
+	console.log("foods: "+foods)
 	let foodsArr = JSON.parse(foods)
 	if(!(foodsArr instanceof Array)){
 		callback(error, "That's not an array.")
